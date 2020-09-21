@@ -1,45 +1,29 @@
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  const isMyVtex = tab.url.includes("myvtex.com");
+const authCookie = { name: 'VtexIdclientAutCookie' };
 
-  const { hostname } = new URL(tab.url);
+chrome.cookies.getAll(authCookie, cookies => {
+  console.log(cookies);
 
-  if (isMyVtex) {
-    chrome.cookies.getAll({ name: "VtexIdclientAutCookie" }, cookies => {
-      console.log(tab.url, cookies);
+  if (!cookies) return;
+
+  const { value: cookieValue } =
+    cookies.find(({ domain }) => domain.includes('myvtex')) || {};
+
+  chrome.tabs.getAllInWindow(tabs => {
+    const vtexLocalTabs = tabs.filter(
+      tab => tab && tab.url.includes('vtexlocal.com.br')
+    );
+
+    console.log('vtexLocalTabs', vtexLocalTabs);
+
+    vtexLocalTabs.forEach(tab => {
+      console.log('iterated tab', tab);
+
       chrome.cookies.set({
-        url: "https://tamboqa.myvtex.com/",
-        name: "VtexIdclientAutCookie",
-        value: cookies[0].value,
+        ...authCookie,
+        url: tab.url,
+        value: cookieValue,
       });
+      chrome.tabs.reload(tab.id);
     });
-
-    // chrome.tabs.getAllInWindow(tabs => {
-    //   const myVTEXTab = tabs.find(tab => tab.url.includes("https://tamboqa.myvtex.com/"));
-
-    //   // const { id } = myVTEXTab || {};
-    //   // chrome.tabs.reload(id);
-    // });
-  }
+  });
 });
-
-// chrome.cookies.get(
-//   {
-//     url: "https://tambo.myvtex.com/",
-//     name: "VtexIdclientAutCookie",
-//   },
-//   cookie => {
-//     if (cookie) {
-//       chrome.cookies.set({
-//         url: "https://tamboqa.myvtex.com/",
-//         name: "VtexIdclientAutCookie",
-//         value: cookie.value,
-//       });
-
-//       chrome.tabs.getAllInWindow(tabs => {
-//         const myVTEXTab = tabs.find(tab => tab.url.includes("https://tamboqa.myvtex.com/"));
-//         const { id } = myVTEXTab || {};
-//         chrome.tabs.reload(id);
-//       });
-//     }
-//   }
-// );

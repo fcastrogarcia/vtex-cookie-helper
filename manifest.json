@@ -7,8 +7,7 @@
     "tabs",
     "cookies",
     "https://*.myvtex.com/*",
-    "https://*.vtexlocal.com.br/*",
-    "http://*.vtexlocal.com.br/*"
+    "https://*.vtexlocal.com.br/*"
   ],
   "background": {
     "persistent": false,
