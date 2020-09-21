@@ -1,0 +1,2 @@
+# vtex-cookie-helper
+
