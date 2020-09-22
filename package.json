@@ -5,13 +5,12 @@
   "main": "index.js",
   "scripts": {
     "build": "rm -rf dist && webpack && npm run copy:dist",
-    "copy:dist": "cp ./src/popup.html manifest.json ./dist"
+    "copy:dist": "cp ./src/popup.html manifest.json logo512.png ./dist"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.11.6",
-    "@babel/plugin-transform-react-jsx": "^7.10.4",
     "@babel/preset-env": "^7.11.5",
     "babel-loader": "^8.1.0",
     "webpack": "^4.44.2",
