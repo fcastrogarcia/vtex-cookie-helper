@@ -1,7 +1,7 @@
 module.exports = {
   mode: 'production',
   entry: {
-    background: './src/background.js',
+    background: './src/scripts/background.js',
     bundle: './src/popup/index.js',
   },
   output: {
