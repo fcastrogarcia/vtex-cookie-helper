@@ -2,6 +2,7 @@ module.exports = {
   mode: 'production',
   entry: {
     background: './src/background.js',
+    bundle: './src/popup/index.js',
   },
   output: {
     filename: '[name].js',
@@ -19,9 +20,18 @@ module.exports = {
           },
         },
       },
+      {
+        test: /\.scss$/i,
+        use: [
+          'style-loader',
+          'css-loader',
+          'resolve-url-loader',
+          'sass-loader',
+        ],
+      },
     ],
   },
   resolve: {
-    extensions: ['.js'],
+    extensions: ['.js', '.scss'],
   },
 }
