@@ -2,7 +2,7 @@ module.exports = {
   mode: 'production',
   entry: {
     background: './src/scripts/background.js',
-    bundle: './src/popup/index.js',
+    popup: './src/popup/index.js',
   },
   output: {
     filename: '[name].js',
