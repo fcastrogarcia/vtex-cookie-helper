@@ -8,7 +8,8 @@
     "cookies",
     "https://*.myvtex.com/*",
     "https://*.vtexlocal.com.br/*",
-    "http://*.vtexlocal.com.br/*"
+    "http://*.vtexlocal.com.br/*",
+    "https://uploader.janisdev.in/*"
   ],
   "background": {
     "persistent": false,

@@ -1,59 +1,34 @@
 const authCookie = { name: 'VtexIdclientAutCookie' }
 
-// chrome.tabs.getAllInWindow(tabs => {
-//   const vtexLocalTabs = tabs.filter(
-//     tab => tab && tab.url.includes('vtexlocal.com.br')
-//   );
-
-//   console.log('vtexLocalTabs', vtexLocalTabs);
-
-//   if (!vtexLocalTabs.length) return;
-
-//   chrome.cookies.getAll(authCookie, cookies => {
-//     if (!cookies.length) return;
-
-//     const { value: cookieValue } =
-//       cookies.find(({ domain }) => domain.includes('myvtex')) || {};
-
-//     vtexLocalTabs.forEach(tab => {
-//       console.log('iterated tab', tab);
-
-//       chrome.cookies.set({
-//         ...authCookie,
-//         url: tab.url,
-//         value: cookieValue,
-//         httpOnly: true,
-//         secure: true,
-//       });
-//       // chrome.tabs.reload(tab.id);
-//     });
-//   });
-// });
-
 chrome.cookies.getAll({ ...authCookie }, cookies => {
   console.log('cookies', cookies)
-  const { value: cookieValue } =
-    cookies.find(({ domain }) => domain.includes('geantun.myvtex')) || {}
+
+  const { value: cookieValue, expirationDate } =
+    cookies.find(({ domain }) => domain.includes('.myvtex')) || {}
 
   chrome.tabs.getAllInWindow(tabs => {
-    console.log(tabs)
+    console.log('all tabs: ', tabs)
 
-    const vtexLocalTabs =
-      tabs.filter(tab => tab && tab.url.includes('.vtexlocal')) || []
-    console.log('vtexLocalTabs', vtexLocalTabs)
+    const whitelist = ['.vtexlocal', 'uploader.janisdev']
 
-    vtexLocalTabs.forEach(tab => {
-      // const { origin } = new URL(tab.url);
+    const unauthenticatedTabs =
+      tabs.filter(
+        tab => tab && whitelist.some(domain => tab.includes(domain))
+      ) || []
 
+    console.log('unauthenticatedTabs', unauthenticatedTabs)
+
+    unauthenticatedTabs.forEach(tab => {
       chrome.cookies.set({
         ...authCookie,
         url: tab.url,
         value: cookieValue,
         httpOnly: true,
         secure: true,
+        path: '/',
+        expirationDate,
       })
+      chrome.tabs.reload(tab.id)
     })
   })
 })
-
-// Unchecked runtime.lastError: No host permissions for cookies at url: "http://hiperlibertad.vtexlocal.com.br/Admin/Site/Login.aspx?ReturnUrl=%2f".
