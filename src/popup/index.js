@@ -7,7 +7,7 @@ function handleBackgroundPage() {
     console = backgroundPage.console
 
     chrome.runtime.sendMessage({ parseCookies: true }, response => {
-      console.log('repsonse from background: ', response)
+      console.log('response from background: ', response)
     })
   })
 }
