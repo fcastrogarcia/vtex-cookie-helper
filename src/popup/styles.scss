@@ -1,4 +1,19 @@
+body {
+  margin: 0;
+  padding: 30px;
+}
+
+body,
+button {
+  font-family: 'Lucida Console', Monaco, monospace;
+}
+
+button {
+  background: none;
+  border-radius: 4px;
+  outline: none;
+}
 .main-btn {
-  background: red;
   font-size: 15px;
+  font-weight: 700;
 }

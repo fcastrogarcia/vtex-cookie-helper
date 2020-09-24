@@ -1,32 +1,49 @@
 const authCookie = { name: 'VtexIdclientAutCookie' }
 
-chrome.cookies.getAll({ ...authCookie }, cookies => {
-  if (!cookies.length) return
+const cookiesCallback = sendResponse => cookies => {
+  try {
+    if (!cookies.length) throw new Error('No authentication cookies were found')
 
-  const { value: cookieValue, expirationDate } =
-    cookies.find(({ domain }) => domain.includes('.myvtex')) || {}
+    const { value, expirationDate } =
+      cookies.find(({ domain }) => domain.includes('.myvtex')) || {}
 
-  chrome.tabs.getAllInWindow(tabs => {
-    const whitelist = ['.vtexlocal', 'uploader.janisdev']
+    if (!value) return
 
-    const unauthenticatedTabs =
-      tabs.filter(
-        tab => tab && whitelist.some(domain => tab.url.includes(domain))
-      ) || []
+    chrome.tabs.getAllInWindow(tabs => {
+      const whitelist = ['.vtexlocal', 'uploader.janisdev']
 
-    if (!unauthenticatedTabs.length) return
+      const unauthenticatedTabs =
+        tabs.filter(
+          tab => tab && whitelist.some(domain => tab.url.includes(domain))
+        ) || []
 
-    unauthenticatedTabs.forEach(tab => {
-      chrome.cookies.set({
-        ...authCookie,
-        url: tab.url,
-        value: cookieValue,
-        httpOnly: true,
-        secure: true,
-        path: '/',
-        expirationDate,
+      if (!unauthenticatedTabs.length)
+        throw new Error('No vtexlocal tabs were found')
+
+      unauthenticatedTabs.forEach(tab => {
+        chrome.cookies.set({
+          ...authCookie,
+          url: tab.url,
+          value,
+          httpOnly: true,
+          secure: true,
+          path: '/',
+          expirationDate,
+        })
+        chrome.tabs.reload(tab.id)
       })
-      chrome.tabs.reload(tab.id)
     })
-  })
-})
+  } catch (error) {
+    sendResponse({ error, message: 'Unable to set cookie' })
+  }
+}
+
+const parseCookies = sendResponse =>
+  chrome.cookies.getAll({ ...authCookie }, cookiesCallback(sendResponse))
+
+const handleMessage = (message, sender, sendResponse) => {
+  if (message && message.parseCookies) parseCookies(sendResponse)
+  return true
+}
+
+chrome.runtime.onMessage.addListener(handleMessage)
