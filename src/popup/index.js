@@ -1,5 +1,6 @@
 import './styles.scss'
 ;(() => {
+  const { chrome } = window || {}
   const btn = document.querySelector('#cookie-parser-btn')
 
   const sendMessage = () =>
@@ -9,6 +10,7 @@ import './styles.scss'
 
   const handleBackgroundPage = () => {
     chrome.runtime.getBackgroundPage(backgroundPage => {
+      // eslint-disable-next-line no-global-assign
       console = backgroundPage.console
       sendMessage()
     })

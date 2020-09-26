@@ -1,3 +1,4 @@
+const path = require('path')
 const CopyPlugin = require('copy-webpack-plugin')
 const ExtensionReloader = require('webpack-extension-reloader')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
@@ -5,7 +6,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
 const config = {
   mode: process.env.NODE_ENV,
-  context: __dirname + '/',
+  context: path.join(__dirname, '/'),
   devtool: 'cheap-module-source-map',
   entry: {
     background: './src/scripts/background.js',
@@ -13,7 +14,7 @@ const config = {
   },
   output: {
     filename: '[name].js',
-    path: __dirname + '/dist',
+    path: path.join(__dirname, '/dist'),
   },
   module: {
     rules: [

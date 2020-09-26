@@ -1,4 +1,6 @@
 ;(() => {
+  const { chrome } = window || {}
+
   const whitelist = ['.vtexlocal', 'uploader.janisdev']
 
   const authCookie = { name: 'VtexIdclientAutCookie' }
