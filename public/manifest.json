@@ -17,6 +17,6 @@
   },
   "browser_action": {
     "default_icon": "logo512.png",
-    "default_popup": "index.html"
+    "default_popup": "popup.html"
   }
 }
