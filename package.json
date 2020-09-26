@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "rm -rf dist && webpack && npm run copy:dist",
-    "copy:dist": "cp ./src/popup/index.html manifest.json logo512.png ./dist"
+    "copy:dist": "cp ./src/popup/index.html manifest.json ./dist"
   },
   "author": "",
   "license": "ISC",
