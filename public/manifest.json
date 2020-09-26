@@ -1,6 +1,6 @@
 {
   "name": "VTEX Cookie Helper",
-  "version": "2.1",
+  "version": "1.0",
   "manifest_version": 2,
   "description": "This extension copies the VtexIdclientAutCookie cookie from myvtex.com domains to vtexlocal.com.br domains that matches the same project.",
   "permissions": [

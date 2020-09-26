@@ -55,7 +55,7 @@ const config = {
   ],
 }
 
-if (process.env.NOVE_ENV === 'development') {
+if (process.env.NODE_ENV === 'development') {
   config.plugins = (config.plugins || []).concat([new ExtensionReloader()])
 }
 
