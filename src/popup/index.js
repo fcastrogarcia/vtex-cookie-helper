@@ -1,15 +1,18 @@
 import './styles.scss'
+;(() => {
+  const btn = document.querySelector('#cookie-parser-btn')
 
-const btn = document.querySelector('#cookie-parser-btn')
-
-function handleBackgroundPage() {
-  chrome.runtime.getBackgroundPage(backgroundPage => {
-    console = backgroundPage.console
-
+  const sendMessage = () =>
     chrome.runtime.sendMessage({ parseCookies: true }, response => {
       console.log('response from background: ', response)
     })
-  })
-}
 
-btn.addEventListener('click', handleBackgroundPage)
+  const handleBackgroundPage = () => {
+    chrome.runtime.getBackgroundPage(backgroundPage => {
+      console = backgroundPage.console
+      sendMessage()
+    })
+  }
+
+  btn.addEventListener('click', handleBackgroundPage)
+})()

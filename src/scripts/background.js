@@ -1,49 +1,62 @@
-const authCookie = { name: 'VtexIdclientAutCookie' }
+;(() => {
+  const whitelist = ['.vtexlocal', 'uploader.janisdev']
 
-const cookiesCallback = sendResponse => cookies => {
-  try {
-    if (!cookies.length) throw new Error('No authentication cookies were found')
+  const authCookie = { name: 'VtexIdclientAutCookie' }
 
-    const { value, expirationDate } =
-      cookies.find(({ domain }) => domain.includes('.myvtex')) || {}
-
-    if (!value) return
-
-    chrome.tabs.getAllInWindow(tabs => {
-      const whitelist = ['.vtexlocal', 'uploader.janisdev']
-
-      const unauthenticatedTabs =
-        tabs.filter(
-          tab => tab && whitelist.some(domain => tab.url.includes(domain))
-        ) || []
-
-      if (!unauthenticatedTabs.length)
-        throw new Error('No vtexlocal tabs were found')
-
-      unauthenticatedTabs.forEach(tab => {
-        chrome.cookies.set({
-          ...authCookie,
-          url: tab.url,
-          value,
-          httpOnly: true,
-          secure: true,
-          path: '/',
-          expirationDate,
-        })
-        chrome.tabs.reload(tab.id)
-      })
-    })
-  } catch (error) {
-    sendResponse({ error, message: 'Unable to set cookie' })
+  const cookieTemplate = {
+    httpOnly: true,
+    secure: true,
+    path: '/',
+    ...authCookie,
   }
-}
 
-const parseCookies = sendResponse =>
-  chrome.cookies.getAll({ ...authCookie }, cookiesCallback(sendResponse))
+  const getUnauthenticatedTabs = tabs =>
+    tabs.filter(
+      tab => tab && whitelist.some(domain => tab.url.includes(domain))
+    ) || []
 
-const handleMessage = (message, sender, sendResponse) => {
-  if (message && message.parseCookies) parseCookies(sendResponse)
-  return true
-}
+  const cookiesCallback = sendResponse => cookies => {
+    try {
+      if (!cookies.length)
+        throw new Error('No authentication cookies were found')
 
-chrome.runtime.onMessage.addListener(handleMessage)
+      const { value, expirationDate } =
+        cookies.find(({ domain }) => domain.includes('.myvtex')) || {}
+
+      if (!value) return
+
+      chrome.tabs.getAllInWindow(tabs => {
+        const unauthenticatedTabs = getUnauthenticatedTabs(tabs)
+
+        if (!unauthenticatedTabs.length)
+          throw new Error('No vtexlocal tabs were found')
+
+        unauthenticatedTabs.forEach(tab => {
+          chrome.cookies.get({ ...authCookie, url: tab.url }, cookie => {
+            if (!cookie) {
+              chrome.cookies.set({
+                ...cookieTemplate,
+                url: tab.url,
+                value,
+                expirationDate,
+              })
+              chrome.tabs.reload(tab.id)
+            }
+          })
+        })
+      })
+    } catch (error) {
+      sendResponse({ error, message: 'Unable to set cookie' })
+    }
+  }
+
+  const parseCookies = sendResponse =>
+    chrome.cookies.getAll({ ...authCookie }, cookiesCallback(sendResponse))
+
+  const handleMessage = (message, sender, sendResponse) => {
+    if (message && message.parseCookies) parseCookies(sendResponse)
+    return true
+  }
+
+  chrome.runtime.onMessage.addListener(handleMessage)
+})()
